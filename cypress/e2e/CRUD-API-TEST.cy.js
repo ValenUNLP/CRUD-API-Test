@@ -1,5 +1,17 @@
 describe("CRUD API TEST",()=>{
 
+    const fixedElement = {
+        id: 3,
+        name: "Valentin3",
+        surname: "Banegas3"
+    }
+
+    const newElement = {
+        id: 3,
+        name: "Valentin4",
+        surname: "Banegas4"
+    }
+
     const endpoint = "http://localhost:3000/persons"
 
     const getElement = (endpoint)=>{
@@ -15,6 +27,11 @@ describe("CRUD API TEST",()=>{
         cy.request("PUT", realEndpoint, element)
     }
 
+    const deleteElement = (endpoint, element)=>{
+        const realEndpoint = `${endpoint}/${element.id}`
+        cy.request("DELETE", realEndpoint)
+    }
+
     it("Se debe validar la cantidad de elementos del endpoint", ()=>{
 
         getElement(endpoint).its("body").should(body  =>{
@@ -23,12 +40,6 @@ describe("CRUD API TEST",()=>{
     })
 
     it("Se deberia añadir un elemento",()=>{
-
-        const newElement = {
-            id: 3,
-            name: "Valentin4",
-            surname: "Banegas4"
-        }
 
         addElement(endpoint, newElement)
 
@@ -39,18 +50,20 @@ describe("CRUD API TEST",()=>{
     })
 
     it("Se deberia cambiar un elemento", ()=>{
-
-        const fixedElement = {
-            id: 3,
-            name: "Valentin3",
-            surname: "Banegas3"
-        }
-
+        
         changeElement(endpoint, fixedElement)
 
         getElement(endpoint).its("body").should(body =>{
             expect(body).to.have.length(3)
             expect(body[fixedElement.id - 1]).deep.eq(fixedElement)
+        })
+    })
+
+    it("Se deberia eliminar un elemento",function(){
+        deleteElement(endpoint, fixedElement)
+
+        getElement(endpoint).its("body").should(body =>{
+            expect(body).to.have.length(2)
         })
     })
 })
